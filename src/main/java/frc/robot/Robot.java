@@ -171,6 +171,7 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("Neo Current", flywheel.getOutputCurrent());
 		SmartDashboard.putBoolean("Conveyor Running", conveyor1.get() != 0);
 		SmartDashboard.putBoolean("Fast Gear", shift.get());
+		SmartDashboard.putNumber("Flywheel Power", flywheelMinSpeed);
 	}
 
 	@Override
@@ -286,10 +287,16 @@ public class Robot extends TimedRobot {
 		if (flywheelSpeed > 1) flywheelSpeed = 1;
 		if (flywheelSpeed < 0) flywheelSpeed = 0;
 
-		// if (xRemote.getXButtonPressed()) flywheelSpin = !flywheelSpin;
-		// flywheel.set(flywheelSpin ? flywheelSpeed : 0);
-		// if (xRemote.getAButtonPressed()) rollerON = !rollerON;
-		// roller.set(rollerON ? 0.5 : 0);
+		if (XBoi.getXButtonPressed()) {
+			flywheelMinSpeed = flywheelMinSpeed + 0.1;
+			minVel = 0;
+		}
+		if (XBoi.getBButtonPressed()){
+			flywheelMinSpeed = flywheelMinSpeed - 0.1;
+			minVel = 0;
+		}
+
+		
 
 		if (XBoi.getBumperPressed(Hand.kRight)) shift.set(true);
 		if (XBoi.getBumperPressed(Hand.kLeft)) shift.set(false);
