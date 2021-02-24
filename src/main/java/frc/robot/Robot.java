@@ -42,13 +42,13 @@ public class Robot extends TimedRobot {
 	final WPI_TalonFX fl = new WPI_TalonFX(3);
 	final DifferentialDrive drive = new DifferentialDrive(fl, fr);
 
-	final CANSparkMax climb = new CANSparkMax(8, MotorType.kBrushed);
+	final CANSparkMax climb = new CANSparkMax(4, MotorType.kBrushed);
 	final WPI_VictorSPX hood = new WPI_VictorSPX(5);
 	final WPI_VictorSPX roller = new WPI_VictorSPX(6);
 	final WPI_VictorSPX intake = new WPI_VictorSPX(7);
 	final Spark conveyor1 = new Spark(0);
 	final Spark conveyor2 = new Spark(1);
-	final CANSparkMax flywheel = new CANSparkMax(4, MotorType.kBrushless);
+	final CANSparkMax flywheel = new CANSparkMax(8, MotorType.kBrushless);
 
 	final Compressor air = new Compressor(9);
 	final Solenoid shift = new Solenoid(9, 0);
@@ -276,14 +276,15 @@ public class Robot extends TimedRobot {
 		XBoi.setRumble(RumbleType.kLeftRumble, flywheelGetVel / 4700);
 		XBoi.setRumble(RumbleType.kRightRumble, flywheelGetVel / 4700);
 
-		if (XBoi.getStartButtonPressed()) {
-			climbPiston.set(true);
-			climberPiston = true;
-		}
-		if (XBoi.getBackButtonPressed()) {
-			climbPiston.set(false);
-			climberPiston = false;
-		}
+		// UNCOMMENT FOR CLIMB PISTON
+		// if (XBoi.getStartButtonPressed()) {
+		// 	climbPiston.set(true);
+		// 	climberPiston = true;
+		// }
+		// if (XBoi.getBackButtonPressed()) {
+		// 	climbPiston.set(false);
+		// 	climberPiston = false;
+		// }
 		if (flywheelSpeed > 1) flywheelSpeed = 1;
 		if (flywheelSpeed < 0) flywheelSpeed = 0;
 
@@ -426,9 +427,9 @@ public class Robot extends TimedRobot {
 			sawIt = false;
 		}
 
-		if (Logi.getRawButtonPressed(5)) rollerON = false;
+		if (Logi.getRawButtonPressed(5) || XBoi.getBackButtonPressed()) rollerON = false;
 
-		if (Logi.getRawButtonPressed(6)) rollerON = true;
+		if (Logi.getRawButtonPressed(6) || XBoi.getStartButtonPressed()) rollerON = true;
 
 		roller.set(rollerON ? -0.4 : 0);
 
