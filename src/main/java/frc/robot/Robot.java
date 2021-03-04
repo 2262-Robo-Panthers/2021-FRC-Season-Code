@@ -258,18 +258,18 @@ public class Robot extends TimedRobot {
 		final int LogiPOV = Logi.getPOV(0);
 		final int XDPad = XBoi.getPOV(0);
 
-		drive.arcadeDrive(XBoi.getTriggerAxis(Hand.kLeft) - XBoi.getTriggerAxis(Hand.kRight), -XBoi.getX(Hand.kLeft)/2);
+		drive.arcadeDrive(XBoi.getTriggerAxis(Hand.kLeft) - XBoi.getTriggerAxis(Hand.kRight), -XBoi.getX(Hand.kLeft));
 
 		final double flywheelGetVel = flywheel.getEncoder().getVelocity();
 
 		final Translation2d targetTranslation = getTargetPose().getTranslation();
 		final double targetAngle = -Math.atan2(targetTranslation.getY(), targetTranslation.getX());
 
-		if (XDPad == 0) autoAlignEnabled = !autoAlignEnabled;
-		if (autoAlignEnabled) {
-			fl.set(autoAlignPID.calculate(targetAngle));
-			fr.set(autoAlignPID.calculate(targetAngle));
-		}
+		// if (XDPad == 0) autoAlignEnabled = !autoAlignEnabled;
+		// if (autoAlignEnabled) {
+		// 	fl.set(autoAlignPID.calculate(targetAngle));
+		// 	fr.set(autoAlignPID.calculate(targetAngle));
+		// }
 
 		if (flywheel.get() == 0) shooting = false;
 
@@ -301,9 +301,9 @@ public class Robot extends TimedRobot {
 
 		if (XBoi.getBumperPressed(Hand.kRight)) shift.set(true);
 		if (XBoi.getBumperPressed(Hand.kLeft)) shift.set(false);
-		if (LogiPOV == 90) intake.set(-0.5);
-		if (LogiPOV == 270) intake.set(0.5);
-		if (LogiPOV != 90 && LogiPOV != 270) intake.set(0);
+		if (XDPad == 90) intake.set(-0.5);
+		if (XDPad == 270) intake.set(0.5);
+		if (XDPad != 90 && XDPad != 270) intake.set(0);
 
 		if (LogiPOV == 180) ConveyorReverse();
 		else if (logiPOVWasDown) ConveyorStop();
@@ -401,6 +401,9 @@ public class Robot extends TimedRobot {
 		// else ConveyorStop();
 
 		if (XBoi.getX(Hand.kRight) > 0.1 || XBoi.getX(Hand.kRight) < -0.1) hood.set(XBoi.getX(Hand.kRight));
+		else hood.set(0.0);
+		SmartDashboard.putNumber("Right X", XBoi.getX(Hand.kRight));
+		SmartDashboard.putNumber("Hood Value", hood.get());
 
 		// if (frontPhotoGate.get()) {
 		// 	ConveyorIntake();
@@ -425,6 +428,11 @@ public class Robot extends TimedRobot {
 			ConveyorStop();
 			shooting = false;
 			sawIt = false;
+		}
+		if (XBoi.getYButtonPressed()) {
+			shooting = false;
+			sawIt = false;
+			ConveyorStop();
 		}
 
 		if (Logi.getRawButtonPressed(5) || XBoi.getBackButtonPressed()) rollerON = false;
