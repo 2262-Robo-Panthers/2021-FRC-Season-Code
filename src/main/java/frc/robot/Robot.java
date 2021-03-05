@@ -36,78 +36,77 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot {
-	final WPI_TalonFX br = new WPI_TalonFX(0);
-	final WPI_TalonFX fr = new WPI_TalonFX(1);
-	final WPI_TalonFX bl = new WPI_TalonFX(2);
-	final WPI_TalonFX fl = new WPI_TalonFX(3);
-	final DifferentialDrive drive = new DifferentialDrive(fl, fr);
+	private final WPI_TalonFX br = new WPI_TalonFX(0);
+	private final WPI_TalonFX fr = new WPI_TalonFX(1);
+	private final WPI_TalonFX bl = new WPI_TalonFX(2);
+	private final WPI_TalonFX fl = new WPI_TalonFX(3);
+	private final DifferentialDrive drive = new DifferentialDrive(fl, fr);
 
-	final CANSparkMax climb = new CANSparkMax(4, MotorType.kBrushed);
-	final WPI_VictorSPX hood = new WPI_VictorSPX(5);
-	final WPI_VictorSPX roller = new WPI_VictorSPX(6);
-	final WPI_VictorSPX intake = new WPI_VictorSPX(7);
-	final Spark conveyor1 = new Spark(0);
-	final Spark conveyor2 = new Spark(1);
-	final CANSparkMax flywheel = new CANSparkMax(8, MotorType.kBrushless);
+	private final CANSparkMax climb = new CANSparkMax(4, MotorType.kBrushed);
+	private final WPI_VictorSPX hood = new WPI_VictorSPX(5);
+	private final WPI_VictorSPX roller = new WPI_VictorSPX(6);
+	private final WPI_VictorSPX intake = new WPI_VictorSPX(7);
+	private final Spark conveyor1 = new Spark(0);
+	private final Spark conveyor2 = new Spark(1);
+	private final CANSparkMax flywheel = new CANSparkMax(8, MotorType.kBrushless);
 
-	final Compressor air = new Compressor(9);
-	final Solenoid shift = new Solenoid(9, 0);
-	final DoubleSolenoid stopper = new DoubleSolenoid(9, 2, 3);
-	final Solenoid climbPiston = new Solenoid(9, 4);
+	private final Compressor air = new Compressor(9);
+	private final Solenoid shift = new Solenoid(9, 0);
+	private final DoubleSolenoid stopper = new DoubleSolenoid(9, 2, 3);
+	private final Solenoid climbPiston = new Solenoid(9, 4);
 
-	final XboxController XBoi = new XboxController(0);
-	final Joystick Logi = new Joystick(1);
+	private final XboxController XBoi = new XboxController(0);
+	private final Joystick Logi = new Joystick(1);
 
-	final DigitalInput frontPhotoGate = new DigitalInput(0);
-	final DigitalInput upperPhotoGate = new DigitalInput(1);
-	final DigitalInput otherPhotoGate = new DigitalInput(7);
-	final Encoder hoodEncoder = new Encoder(2, 3);
-	final DigitalInput upperIntakeLimit = new DigitalInput(4);
-	final DigitalInput lowerIntakeLimit = new DigitalInput(5);
-	final DigitalInput climbLimit = new DigitalInput(6);
-	final DigitalOutput lightRing = new DigitalOutput(9);
+	private final DigitalInput frontPhotoGate = new DigitalInput(0);
+	private final DigitalInput upperPhotoGate = new DigitalInput(1);
+	private final DigitalInput otherPhotoGate = new DigitalInput(7);
+	private final Encoder hoodEncoder = new Encoder(2, 3);
+	private final DigitalInput upperIntakeLimit = new DigitalInput(4);
+	private final DigitalInput lowerIntakeLimit = new DigitalInput(5);
+	private final DigitalInput climbLimit = new DigitalInput(6);
+	private final DigitalOutput lightRing = new DigitalOutput(9);
 
-	NetworkTableEntry targetInViewEntry;
-	NetworkTableEntry poseEntry;
-	final PIDController autoAlignPID = new PIDController(1, 0, 0);
+	private NetworkTableEntry targetInViewEntry;
+	private NetworkTableEntry poseEntry;
+	private final PIDController autoAlignPID = new PIDController(1, 0, 0);
 
-	final Timer autoTimer = new Timer();
-	final Timer intakingTimer = new Timer();
-	final Timer initiationLineTimer = new Timer();
-	final Timer flywheelStarting = new Timer();
+	private final Timer autoTimer = new Timer();
+	private final Timer intakingTimer = new Timer();
+	private final Timer initiationLineTimer = new Timer();
+	private final Timer flywheelStarting = new Timer();
 
-	double move;
-	boolean flywheelSpin;
-	double flywheelSpeed = 0.5;
-	int flywheelSetpoint = 0;
-	boolean rollerON;
-	boolean climberPiston;
-	boolean Neo550SpinCity;
-	boolean conveyorStarted;
-	boolean shooting;
-	boolean sawIt;
-	boolean intakeWantConveyor = false;
-	double minVel;
-	boolean autoAlignEnabled;
-	boolean targetInView;
-	boolean inPosition;
-	boolean intaking;
-	boolean intakingParty;
-	boolean flywheelWantToShoot;
-	boolean flywheelCanShoot;
-	boolean dPadPress;
-	boolean runDpadMethod;
-	double flywheelMinSpeed = 0;
-    boolean logiPOVWasDown = false;
-	boolean logiPOVUpWasPressed = false;
-	double motorRotation;
-	double gearboxRotation;
-	double distanceTraveled;
-	static final double lowGearRatio = 20.8;
-	static final double turnRadius = 2 * 11 * Math.PI;
-	static final double driveEncoderPerRotation = 2048;
-	static final double distancePerWheelRotation = 6 * Math.PI;
-
+	private double move;
+	private boolean flywheelSpin;
+	private double flywheelSpeed = 0.5;
+	private int flywheelSetpoint = 0;
+	private boolean rollerON;
+	private boolean climberPiston;
+	private boolean Neo550SpinCity;
+	private boolean conveyorStarted;
+	private boolean shooting;
+	private boolean sawIt;
+	private boolean intakeWantConveyor = false;
+	private double minVel;
+	private boolean autoAlignEnabled;
+	private boolean targetInView;
+	private boolean inPosition;
+	private boolean intaking;
+	private boolean intakingParty;
+	private boolean flywheelWantToShoot;
+	private boolean flywheelCanShoot;
+	private boolean dPadPress;
+	private boolean runDpadMethod;
+	private double flywheelMinSpeed = 0;
+    private boolean logiPOVWasDown = false;
+	private boolean logiPOVUpWasPressed = false;
+	private double motorRotation;
+	private double gearboxRotation;
+	private double distanceTraveled;
+	private static final double lowGearRatio = 20.8;
+	private static final double turnRadius = 2 * 11 * Math.PI;
+	private static final double driveEncoderPerRotation = 2048;
+	private static final double distancePerWheelRotation = 6 * Math.PI;
 
 	/*
 	 * ================
@@ -246,14 +245,14 @@ public class Robot extends TimedRobot {
 		intakeWantConveyor = false;
 		intakingParty = false;
 		flywheelMinSpeed = 0;
-		stopper.set(Value.kReverse);
+		stopper.set(Value.kForward);
 		lightRing.set(true);
 	}
 
 	@Override
 	public void teleopPeriodic() {
 
-		stopper.set(shooting ? Value.kForward : Value.kReverse);
+		// stopper.set(shooting ? Value.kForward : Value.kReverse);
 
 		final int LogiPOV = Logi.getPOV(0);
 		final int XDPad = XBoi.getPOV(0);
@@ -289,15 +288,15 @@ public class Robot extends TimedRobot {
 		if (flywheelSpeed < 0) flywheelSpeed = 0;
 
 		if (XBoi.getXButtonPressed()) {
-			flywheelMinSpeed = flywheelMinSpeed + 0.1;
+			flywheelMinSpeed = flywheelMinSpeed + 0.05;
 			minVel = 0;
 		}
 		if (XBoi.getBButtonPressed()){
-			flywheelMinSpeed = flywheelMinSpeed - 0.1;
+			flywheelMinSpeed = flywheelMinSpeed - 0.05;
 			minVel = 0;
 		}
 
-		
+
 
 		if (XBoi.getBumperPressed(Hand.kRight)) shift.set(true);
 		if (XBoi.getBumperPressed(Hand.kLeft)) shift.set(false);
@@ -357,6 +356,8 @@ public class Robot extends TimedRobot {
 
 		flywheel.set(flywheelMinSpeed);
 
+		SmartDashboard.putNumber("Flywheel speed", flywheel.get());
+
 
 		// if (flywheelWantToShoot) FlywheelAllowed();
 		// else flywheel.set(0);
@@ -413,7 +414,7 @@ public class Robot extends TimedRobot {
 		// if (otherPhotoGate.get() && !intaking) ConveyorStop();
 
 
-		if (frontPhotoGate.get() && rollerON && otherPhotoGate.get() == false) intakingParty = true;
+		if (frontPhotoGate.get() && rollerON && !otherPhotoGate.get()) intakingParty = true;
 		if (intakingParty) Intaking();
 
 		if (flywheel.getEncoder().getVelocity() > 1000 && XBoi.getAButtonPressed()) {
