@@ -402,7 +402,7 @@ public class Robot extends TimedRobot {
 		// else ConveyorStop();
 
 		final double hoodInput = XBoi.getX(Hand.kRight);
-		hood.set(XBoi.getX(Hand.kRight) > 0.1 || XBoi.getX(Hand.kRight) < -0.1 ? hoodInput : 0.0);
+		hood.set(Math.abs(hoodInput) > 0.1 ? hoodInput : 0.0);
 		SmartDashboard.putNumber("Right X", XBoi.getX(Hand.kRight));
 		SmartDashboard.putNumber("Hood Value", hood.get());
 
