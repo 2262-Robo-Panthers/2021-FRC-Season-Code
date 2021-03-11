@@ -288,11 +288,11 @@ public class Robot extends TimedRobot {
 		if (flywheelSpeed < 0) flywheelSpeed = 0;
 
 		if (XBoi.getXButtonPressed()) {
-			flywheelMinSpeed = flywheelMinSpeed + 0.05;
+			flywheelMinSpeed = flywheelMinSpeed + 0.1;
 			minVel = 0;
 		}
 		if (XBoi.getBButtonPressed()){
-			flywheelMinSpeed = flywheelMinSpeed - 0.05;
+			flywheelMinSpeed = flywheelMinSpeed - 0.1;
 			minVel = 0;
 		}
 
@@ -303,6 +303,10 @@ public class Robot extends TimedRobot {
 		if (XDPad == 90) intake.set(-0.5);
 		if (XDPad == 270) intake.set(0.5);
 		if (XDPad != 90 && XDPad != 270) intake.set(0);
+
+		if (XDPad == 0) flywheelMinSpeed = flywheelMinSpeed + 0.05;
+		if (XDPad == 180) flywheelMinSpeed = flywheelMinSpeed - 0.05;
+		
 
 		if (LogiPOV == 180) ConveyorReverse();
 		else if (logiPOVWasDown) ConveyorStop();
@@ -434,6 +438,7 @@ public class Robot extends TimedRobot {
 			shooting = false;
 			sawIt = false;
 			ConveyorStop();
+			flywheelMinSpeed = 0.0;
 		}
 
 		if (Logi.getRawButtonPressed(5) || XBoi.getBackButtonPressed()) rollerON = false;
@@ -449,6 +454,13 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putBoolean("Climb Piston", climberPiston);
 		SmartDashboard.putNumber("Angle To Target", targetAngle);
 		SmartDashboard.putBoolean("Full Conveyor", otherPhotoGate.get());
+	}
+
+	@Override
+	public void disabledInit() {
+		super.disabledInit();
+		XBoi.setRumble(RumbleType.kLeftRumble, 0.0);
+		XBoi.setRumble(RumbleType.kRightRumble, 0.0);
 	}
 
 	@Override
