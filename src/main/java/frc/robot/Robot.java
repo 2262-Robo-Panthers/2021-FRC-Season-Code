@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Spark;
@@ -71,6 +72,9 @@ public class Robot extends TimedRobot {
 	private NetworkTableEntry poseEntry;
 	private final PIDController autoAlignPID = new PIDController(1, 0, 0);
 
+	private final SimpleMotorFeedforward flywheelFF = new SimpleMotorFeedforward(flywheelKS, flywheelKV, flywheelKA);
+	private final PIDController flywheelPID = new PIDController(flywheelKP, 0.0, 0.0);
+
 	private final Timer autoTimer = new Timer();
 	private final Timer intakingTimer = new Timer();
 	private final Timer initiationLineTimer = new Timer();
@@ -78,7 +82,6 @@ public class Robot extends TimedRobot {
 
 	private double move;
 	private boolean flywheelSpin;
-	private double flywheelSpeed = 0.5;
 	private int flywheelSetpoint = 0;
 	private boolean rollerON;
 	private boolean climberPiston;
@@ -107,6 +110,12 @@ public class Robot extends TimedRobot {
 	private static final double turnRadius = 2 * 11 * Math.PI;
 	private static final double driveEncoderPerRotation = 2048;
 	private static final double distancePerWheelRotation = 6 * Math.PI;
+	private static final double flywheelKS = 0.0397;
+	private static final double flywheelKV = 0.136;
+	private static final double flywheelKA = 0.0714;
+	private static final double flywheelKP = 2.0;
+
+	private double flywheelSetpointRPM = 0.0;
 
 	/*
 	 * ================
@@ -259,8 +268,6 @@ public class Robot extends TimedRobot {
 
 		drive.arcadeDrive(XBoi.getTriggerAxis(Hand.kLeft) - XBoi.getTriggerAxis(Hand.kRight), -XBoi.getX(Hand.kLeft));
 
-		final double flywheelGetVel = flywheel.getEncoder().getVelocity();
-
 		final Translation2d targetTranslation = getTargetPose().getTranslation();
 		final double targetAngle = -Math.atan2(targetTranslation.getY(), targetTranslation.getX());
 
@@ -272,8 +279,8 @@ public class Robot extends TimedRobot {
 
 		if (flywheel.get() == 0) shooting = false;
 
-		XBoi.setRumble(RumbleType.kLeftRumble, flywheelGetVel / 4700);
-		XBoi.setRumble(RumbleType.kRightRumble, flywheelGetVel / 4700);
+		XBoi.setRumble(RumbleType.kLeftRumble, flywheel.getEncoder().getVelocity() / 4700);
+		XBoi.setRumble(RumbleType.kRightRumble, flywheel.getEncoder().getVelocity() / 4700);
 
 		// UNCOMMENT FOR CLIMB PISTON
 		// if (XBoi.getStartButtonPressed()) {
@@ -284,19 +291,28 @@ public class Robot extends TimedRobot {
 		// 	climbPiston.set(false);
 		// 	climberPiston = false;
 		// }
-		if (flywheelSpeed > 1) flywheelSpeed = 1;
-		if (flywheelSpeed < 0) flywheelSpeed = 0;
+
+		// if (XBoi.getXButtonPressed()) {
+		// 	flywheelMinSpeed += 0.1;
+		// 	minVel = 0;
+		// }
+		// if (XBoi.getBButtonPressed()){
+		// 	flywheelMinSpeed -= 0.1;
+		// 	minVel = 0;
+		// }
+		// if (flywheelMinSpeed > 1.0) flywheelMinSpeed = 1.0;
 
 		if (XBoi.getXButtonPressed()) {
-			flywheelMinSpeed = flywheelMinSpeed + 0.1;
-			minVel = 0;
+			flywheelSetpointRPM += 250.0;
+			flywheelPID.setSetpoint(flywheelSetpointRPM / 60.0);
 		}
-		if (XBoi.getBButtonPressed()){
-			flywheelMinSpeed = flywheelMinSpeed - 0.1;
-			minVel = 0;
+		if (XBoi.getBButtonPressed()) {
+			flywheelSetpointRPM -= 250.0;
+			flywheelPID.setSetpoint(flywheelSetpointRPM / 60.0);
 		}
-
-
+		double flywheelInput = flywheelFF.calculate(flywheelSetpointRPM / 60.0);
+		if (!flywheelPID.atSetpoint()) flywheelInput += flywheelPID.calculate(flywheel.getEncoder().getVelocity() / 60.0);
+		flywheel.setVoltage(flywheelInput < 0.0 ? 0.0 : flywheelInput);
 
 		if (XBoi.getBumperPressed(Hand.kRight)) shift.set(true);
 		if (XBoi.getBumperPressed(Hand.kLeft)) shift.set(false);
@@ -306,7 +322,7 @@ public class Robot extends TimedRobot {
 
 		if (XDPad == 0) flywheelMinSpeed = flywheelMinSpeed + 0.05;
 		if (XDPad == 180) flywheelMinSpeed = flywheelMinSpeed - 0.05;
-		
+
 
 		if (LogiPOV == 180) ConveyorReverse();
 		else if (logiPOVWasDown) ConveyorStop();
@@ -358,7 +374,7 @@ public class Robot extends TimedRobot {
 		// if (!shooting && upperPhotoGate.get()) ConveyorStop();
 
 
-		flywheel.set(flywheelMinSpeed);
+		// flywheel.set(flywheelMinSpeed);
 
 		SmartDashboard.putNumber("Flywheel speed", flywheel.get());
 
