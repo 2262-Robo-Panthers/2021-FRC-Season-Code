@@ -303,26 +303,29 @@ public class Robot extends TimedRobot {
 		// if (flywheelMinSpeed > 1.0) flywheelMinSpeed = 1.0;
 
 		if (XBoi.getXButtonPressed()) {
-			flywheelSetpointRPM += 250.0;
-			flywheelPID.setSetpoint(flywheelSetpointRPM / 60.0);
+			flywheelMinSpeed += 0.1;
+			//flywheelSetpointRPM += 250.0;
+			//flywheelPID.setSetpoint(flywheelSetpointRPM / 60.0);
 		}
 		if (XBoi.getBButtonPressed()) {
-			flywheelSetpointRPM -= 250.0;
-			flywheelPID.setSetpoint(flywheelSetpointRPM / 60.0);
+			flywheelMinSpeed -= 0.1;
+			//flywheelSetpointRPM -= 250.0;
+			//flywheelPID.setSetpoint(flywheelSetpointRPM / 60.0);
 		}
+		flywheel.set(flywheelMinSpeed);
 		double flywheelInput = flywheelFF.calculate(flywheelSetpointRPM / 60.0);
 		if (!flywheelPID.atSetpoint()) flywheelInput += flywheelPID.calculate(flywheel.getEncoder().getVelocity() / 60.0);
-		flywheel.setVoltage(flywheelInput < 0.0 ? 0.0 : flywheelInput);
+		//flywheel.setVoltage(flywheelInput < 0.0 ? 0.0 : flywheelInput);
 
 		if (XBoi.getBumperPressed(Hand.kRight)) shift.set(true);
 		if (XBoi.getBumperPressed(Hand.kLeft)) shift.set(false);
-		if (XDPad == 90) intake.set(-0.5);
-		if (XDPad == 270) intake.set(0.5);
-		if (XDPad != 90 && XDPad != 270) intake.set(0);
 
-		if (XDPad == 0) flywheelMinSpeed = flywheelMinSpeed + 0.05;
-		if (XDPad == 180) flywheelMinSpeed = flywheelMinSpeed - 0.05;
+		if (XDPad == 0) flywheelMinSpeed = 0.35;
+		if (XDPad == 90) flywheelMinSpeed = 0.55;
+		if (XDPad == 180) flywheelMinSpeed = 0.65;
+		if (XDPad == 270) flywheelMinSpeed = 0.75;
 
+		if (Math.abs(XBoi.getY(Hand.kRight)) > 0.4) intake.set(-XBoi.getY(Hand.kRight));
 
 		if (LogiPOV == 180) ConveyorReverse();
 		else if (logiPOVWasDown) ConveyorStop();
