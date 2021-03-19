@@ -323,10 +323,11 @@ public class Robot extends TimedRobot {
 		if (XDPad == 0) flywheelMinSpeed = 0.35;
 		if (XDPad == 90) flywheelMinSpeed = 0.55;
 		if (XDPad == 180) flywheelMinSpeed = 0.65;
-		if (XDPad == 270) flywheelMinSpeed = 0.75;
+		if (XDPad == 270) flywheelMinSpeed = 0.7;
 
-		if (Math.abs(XBoi.getY(Hand.kRight)) > 0.4) intake.set(-XBoi.getY(Hand.kRight));
-
+		final double intakeInput = XBoi.getY(Hand.kRight);
+		intake.set(Math.abs(intakeInput) > 0.5 ? (intakeInput - 0.5 * Math.signum(intakeInput)) * 2 : 0);
+		SmartDashboard.putNumber("Intake Set", intake.get());
 		if (LogiPOV == 180) ConveyorReverse();
 		else if (logiPOVWasDown) ConveyorStop();
 
