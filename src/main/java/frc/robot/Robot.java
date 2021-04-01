@@ -123,24 +123,18 @@ public class Robot extends TimedRobot {
 	 * ================
 	 * Triggers = Drive Forward/Backward
 	 * Left Joystick = Turn
-	 * Right Joystick Up = Lift Pivot
-	 * Right Joystick Left/Right = Move Hood
+	 * Right Joystick X = Hood
+	 * Right Joystick Y = Intake
 	 * Bumpers = Shifting
 	 * A = Shoot
-	 * Start/Back = Lift Piston
-	 *
-	 * ==================
-	 * OPERATOR CONTROLS
-	 * ==================
-	 * Joystick + Button 7 = Lift Pivot
-	 * Trigger = Flywheel Slow
-	 * Button 8 = Flywheel Yeet
-	 * Button 12 = Flywheel Very Slow (Testing only)
-	 * Thumb Button = Stop Flywheel
-	 * Button 5/6 = Toggle Intake Roller
-	 * POV Up/Down = Manual Conveyor
-	 * POV Right/Left = Intake Pivot
-	 *
+	 * Y = Stop Conveyor and Flywheel
+	 * X = flywheel + 0.1
+	 * B = flywheel - 0.1
+	 * Start/Back = Intake Roller
+	 * DPad Up = flywheel 0.35
+	 * DPad Right = flywheel 0.65
+	 * DPad Down = flywheel 1
+	 * DPad Left = Conveyor go
 	 */
 
 	@Override
@@ -321,9 +315,9 @@ public class Robot extends TimedRobot {
 		if (XBoi.getBumperPressed(Hand.kLeft)) shift.set(false);
 
 		if (XDPad == 0) flywheelMinSpeed = 0.35;
-		if (XDPad == 90) flywheelMinSpeed = 0.55;
-		if (XDPad == 180) flywheelMinSpeed = 0.65;
-		if (XDPad == 270) flywheelMinSpeed = 0.7;
+		if (XDPad == 90) flywheelMinSpeed = 0.65;
+		if (XDPad == 180) flywheelMinSpeed = 1;
+		if (XDPad == 270) ConveyorGo();
 
 		final double intakeInput = XBoi.getY(Hand.kRight);
 		intake.set(Math.abs(intakeInput) > 0.5 ? (intakeInput - 0.5 * Math.signum(intakeInput)) * 2 : 0);
